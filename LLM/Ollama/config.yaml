@@ -1,0 +1,18 @@
+#This file controls the entire project.
+
+
+LLM: 'llama2'
+
+ModelFile: None
+
+RAG: Disable
+
+LoadDB: False
+
+DataSources:
+  wiki: []
+  html: []
+  webpage: []
+  pdf: []
+  json: []
+
