@@ -34,7 +34,7 @@ class ConfigureableLLM(BaseModel):
     def load_wiki(self) -> list:
         """This function loads user data provided in different formats"""
         for pages in self.configuration["DataSources"]["wiki"]:
-            print("Loading Wiki Page: ", wiki)
+            print("Loading Wiki Page: ", pages)
             wiki = WikipediaLoader(query=pages, load_max_docs=10)
             wiki.load()
             print(wiki)
