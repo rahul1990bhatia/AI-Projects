@@ -10,9 +10,28 @@ RAG: Disable
 LoadDB: False
 
 DataSources:
-  wiki: []
-  html: []
-  webpage: []
+  wiki: ['Bhagavad_Gita', 'Krishna']
+  html: ['examples\Data\Introduction-Gita.html']
+  webpage:
+    - 'https://vedabase.io/en/library/bg/introduction/'
+    - 'https://vedabase.io/en/library/bg/1/'
+    - 'https://vedabase.io/en/library/bg/2/'
+    - 'https://vedabase.io/en/library/bg/3/'
+    - 'https://vedabase.io/en/library/bg/4/'
+    - 'https://vedabase.io/en/library/bg/5/'
+    - 'https://vedabase.io/en/library/bg/6/'
+    - 'https://vedabase.io/en/library/bg/7/'
+    - 'https://vedabase.io/en/library/bg/8/'
+    - 'https://vedabase.io/en/library/bg/9/'
+    - 'https://vedabase.io/en/library/bg/10/'
+    - 'https://vedabase.io/en/library/bg/11/'
+    - 'https://vedabase.io/en/library/bg/12/'
+    - 'https://vedabase.io/en/library/bg/13/'
+    - 'https://vedabase.io/en/library/bg/14/'
+    - 'https://vedabase.io/en/library/bg/15/'
+    - 'https://vedabase.io/en/library/bg/16/'
+    - 'https://vedabase.io/en/library/bg/17/'
+    - 'https://vedabase.io/en/library/bg/18/'
   pdf: []
   json: []
 

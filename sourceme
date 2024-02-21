@@ -1,0 +1,4 @@
+/c/Users/rahul/anaconda3/python -m venv venv
+source venv/Scripts/activate
+python --version
+python -m pip install -r requirements.txt
