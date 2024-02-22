@@ -10,6 +10,7 @@ from langchain_community.document_loaders import WebBaseLoader
 from langchain_community.embeddings import OllamaEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import Chroma
+from langchain.chains.retrieval_qa.base import RetrievalQA
 
 
 class ConfigureableLLM(BaseModel):
@@ -29,7 +30,10 @@ class ConfigureableLLM(BaseModel):
             query = f"context: {context}/n/n question: {question}"
         else:
             query = f"question: {question}"
-        response = ollama.chat(
+        my_ollama = ollama.create(
+            model=self.configuration["LLM"], modelfile=self.configuration["ModelFile"]
+        )
+        response = my_ollama.chat(
             model=self.configuration["LLM"],
             messages=[
                 {"role": "user", "content": query},
@@ -69,23 +73,49 @@ class ConfigureableLLM(BaseModel):
 
     def load_database(self) -> None:
         """this function will load all data to chromadb"""
-        Documents = []
-        Documents += my_llm.load_wiki()
-        Documents += my_llm.load_html()
-        Documents += my_llm.load_webpage()
-        print("Total number of documents loaded: ", len(Documents))
-        text_splitter = RecursiveCharacterTextSplitter()
+        if self.configuration["LoadDB"]:
+            Documents = []
+            Documents += my_llm.load_wiki()
+            Documents += my_llm.load_html()
+            Documents += my_llm.load_webpage()
+            print("Total number of documents loaded: ", len(Documents))
+            text_splitter = RecursiveCharacterTextSplitter(
+                chunk_size=1000, chunk_overlap=50
+            )
+            splitted_docs = []
+            for doc in Documents:
+                splitted_docs += text_splitter.split_documents(doc)
+            print("Number of docs loaded in Database: ", len(splitted_docs))
+            ollama_emb = OllamaEmbeddings(model=self.configuration["LLM"])
+            vectorstore = Chroma.from_documents(
+                splitted_docs, ollama_emb, persist_directory=".chroma_db"
+            )
+            # vectorstore = Chroma("LLM_Store", ollama_emb)
+            # for doc in Documents:
+            #    splitted_docs = text_splitter.split_documents(doc)
+            #    vectorstore.add_documents(splitted_docs)
+            vectorstore.persist()
+            print("Data successfully loaded to chromaDB")
+
+    def get_database(self):
+        """This function read context from database"""
         ollama_emb = OllamaEmbeddings(model=self.configuration["LLM"])
-        vectorstore = Chroma("LLM_Store", ollama_emb)
-        for doc in Documents:
-            splitted_docs = text_splitter.split_documents(doc)
-            vectorstore.add_documents(doc)
-        vectorstore.persist()
-        print("Data successfully loaded to chromaDB")
+        vectorstore = Chroma(
+            persist_directory=".chroma_db", embedding_function=ollama_emb
+        )
+        retriever = vectorstore.as_retriver()
+        return retriever
+
+    def formatted_docs(self, docs) -> str:
+        return "\n\n".join(doc.page_content for doc in docs)
 
     def rag_chain(self, question: str) -> str:
         if self.configuration["RAG"] == "Enable":
             print("RAG is Enabled.")
+            retriever = self.get_database()
+            # context = retriever.get_relevent_documents(question)
+            context = retriever.invoke(question)
+            self.load_llm(question, context)
         else:
             print("RAG is disabled.")
             self.load_llm(question, "")
@@ -100,4 +130,4 @@ if __name__ == "__main__":
     my_llm = ConfigureableLLM(**{"config_path": args.config})
     my_llm.load_config()
     my_llm.load_database()
-    # my_llm.rag_chain("What is Gita?")
+    my_llm.rag_chain("What is Gita? who wrote it?")

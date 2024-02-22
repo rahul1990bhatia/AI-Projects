@@ -3,7 +3,7 @@
 
 LLM: 'llama2'
 
-ModelFile: None
+ModelFile: model.md
 
 RAG: Disable
 
