@@ -14,7 +14,7 @@ from langchain_community.vectorstores import Chroma
 from langchain.chains.retrieval_qa.base import RetrievalQA
 
 
-class ConfigureableLLM(BaseModel):
+class CustomRAG(BaseModel):
 
     config_path: str
     configuration: Optional[Dict] = None
@@ -27,11 +27,13 @@ class ConfigureableLLM(BaseModel):
     def load_llm(self, question: str, context: str) -> list:
         """This functions enables and loads ollama"""
         print("Selected LLM Model is: ", self.configuration["LLM"])
+        file = open(self.configuration["ModelFile"], "r")
+        modelfile = file.read()
         if self.configuration["RAG"] == "Enable":
             query = f"context: {context}/n/n question: {question}"
         else:
             query = f"question: {question}"
-        ollama.create(model=self.configuration['LLM'], modelfile=self.configuration['ModelFile'])
+        ollama.create(model=self.configuration['LLM'], modelfile=modelfile)
         response = ollama.chat(
             model=self.configuration["LLM"],
             messages=[
@@ -131,7 +133,7 @@ if __name__ == "__main__":
         "-c", "--config", required=True, type=str, help="Pass configuration file"
     )
     args = parser.parse_args()
-    my_llm = ConfigureableLLM(**{"config_path": args.config})
+    my_llm = CustomRAG(**{"config_path": args.config})
     my_llm.load_config()
     my_llm.load_database()
     my_llm.gui()

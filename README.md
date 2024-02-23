@@ -1,26 +1,26 @@
-Welcome to COnfigureable LLM Model. This repo helps you create your own LLM RAG model in minutes.
+# Introduction
 
-Intended user: 
-    - Anyone with personal/orginasational data
+Welcome to CustomRAG local LLM Modeling tool. This repo helps you create your own LLM RAG model in minutes.
+
+# Intended user
+    - Anyone with personal/organisational data
     - Anyone who want's to run it locally
 
-Before Getting Started:
+# Before Getting Started:
     - install ollama in system
+    - run ollama application 
     - ollama pull <model>
-        ollama pull llama2
+        e.g. ollama pull llama2
 
-Getting Started:
-    - install python ( version: )
+# Getting Started:
+    - install python ( version: 3.11)
     - create virtual environment 
         python -m venv venv
     - load requirements
         pip install -r requirements.txt
-    - run main.py
-        python main.py
+    - run tool
+        python CustomRAG.py -c examples/askGITA/config.yaml
 
-Pending task:
-    - Enable Linting
+# Pending task:
     - Write Testcases
-    - create  pipeline
     - Create Documentation (sphrinx)
-    - Write Medium article
