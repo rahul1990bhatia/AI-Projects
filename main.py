@@ -2,6 +2,7 @@ import yaml
 import ollama
 import argparse
 import bs4
+import gradio as gr
 from pydantic import BaseModel
 from typing import Dict, Optional, List
 from langchain_community.document_loaders.wikipedia import WikipediaLoader
@@ -30,7 +31,7 @@ class ConfigureableLLM(BaseModel):
             query = f"context: {context}/n/n question: {question}"
         else:
             query = f"question: {question}"
-        #ollama.create(model=self.configuration['LLM'], modelfile=self.configuration['ModelFile'])
+        ollama.create(model=self.configuration['LLM'], modelfile=self.configuration['ModelFile'])
         response = ollama.chat(
             model=self.configuration["LLM"],
             messages=[
@@ -118,6 +119,10 @@ class ConfigureableLLM(BaseModel):
             print("RAG is disabled.")
             response = self.load_llm(question, "")
         return response
+    
+    def gui(self):
+        interact = gr.Interface(fn=self.rag_chain, inputs="text", outputs="text", title="askGITA")
+        interact.launch()
 
 
 if __name__ == "__main__":
@@ -129,5 +134,4 @@ if __name__ == "__main__":
     my_llm = ConfigureableLLM(**{"config_path": args.config})
     my_llm.load_config()
     my_llm.load_database()
-    response = my_llm.rag_chain("What is Gita? who wrote it?")
-    print(response)
+    my_llm.gui()
