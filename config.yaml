@@ -5,13 +5,13 @@ LLM: 'llama2'
 
 ModelFile: model.md
 
-RAG: Disable
+RAG: Enable
 
-LoadDB: False
+LoadDB: True
 
 DataSources:
   wiki: ['Bhagavad_Gita', 'Krishna']
-  html: ['examples\Data\Introduction-Gita.html']
+  html: []
   webpage:
     - 'https://vedabase.io/en/library/bg/introduction/'
     - 'https://vedabase.io/en/library/bg/1/'
