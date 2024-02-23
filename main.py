@@ -30,10 +30,8 @@ class ConfigureableLLM(BaseModel):
             query = f"context: {context}/n/n question: {question}"
         else:
             query = f"question: {question}"
-        my_ollama = ollama.create(
-            model=self.configuration["LLM"], modelfile=self.configuration["ModelFile"]
-        )
-        response = my_ollama.chat(
+        #ollama.create(model=self.configuration['LLM'], modelfile=self.configuration['ModelFile'])
+        response = ollama.chat(
             model=self.configuration["LLM"],
             messages=[
                 {"role": "user", "content": query},
@@ -103,7 +101,7 @@ class ConfigureableLLM(BaseModel):
         vectorstore = Chroma(
             persist_directory=".chroma_db", embedding_function=ollama_emb
         )
-        retriever = vectorstore.as_retriver()
+        retriever = vectorstore.as_retriever()
         return retriever
 
     def formatted_docs(self, docs) -> str:
@@ -115,10 +113,11 @@ class ConfigureableLLM(BaseModel):
             retriever = self.get_database()
             # context = retriever.get_relevent_documents(question)
             context = retriever.invoke(question)
-            self.load_llm(question, context)
+            response = self.load_llm(question, context)
         else:
             print("RAG is disabled.")
-            self.load_llm(question, "")
+            response = self.load_llm(question, "")
+        return response
 
 
 if __name__ == "__main__":
@@ -130,4 +129,5 @@ if __name__ == "__main__":
     my_llm = ConfigureableLLM(**{"config_path": args.config})
     my_llm.load_config()
     my_llm.load_database()
-    my_llm.rag_chain("What is Gita? who wrote it?")
+    response = my_llm.rag_chain("What is Gita? who wrote it?")
+    print(response)
